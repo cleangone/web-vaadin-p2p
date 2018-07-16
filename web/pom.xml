@@ -52,6 +52,11 @@
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>xyz.cleangone.data</groupId>
+			<artifactId>data-aws-dynamo-p2p</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>xyz.cleangone.e2.util</groupId>
 			<artifactId>e2-util</artifactId>
 			<version>1.5.0-SNAPSHOT</version>
@@ -64,7 +69,7 @@
 		<dependency>
 			<groupId>xyz.cleangone.data</groupId>
 			<artifactId>data-aws-dynamo</artifactId>
-			<version>1.3.0-SNAPSHOT</version>
+			<version>1.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>xyz.cleangone.message</groupId>
