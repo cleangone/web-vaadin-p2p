@@ -45,6 +45,11 @@ public class BaseMenuBar extends MenuBar
         menuItem.setDescription(description);
     }
 
+    protected void addNavigateItem(String pageName)
+    {
+        addNavigateItem(pageName, pageName, this);
+    }
+
     protected void addNavigateItem(String pageName, MenuBar menuBar)
     {
         addNavigateItem(pageName, pageName, menuBar);

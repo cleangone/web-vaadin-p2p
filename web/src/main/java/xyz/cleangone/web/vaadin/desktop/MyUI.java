@@ -10,8 +10,8 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.WebBrowser;
 import com.vaadin.ui.*;
-import fit.pay2play.web.vaadin.desktop.org.profile.PayPage;
-import fit.pay2play.web.vaadin.desktop.org.profile.PlayPage;
+import fit.pay2play.web.vaadin.desktop.PaysAdminPage;
+import fit.pay2play.web.vaadin.desktop.PlaysAdminPage;
 import xyz.cleangone.data.aws.dynamo.entity.item.CatalogItem;
 import xyz.cleangone.data.aws.dynamo.entity.organization.OrgTag;
 import xyz.cleangone.data.aws.dynamo.entity.organization.Organization;
@@ -31,6 +31,7 @@ import xyz.cleangone.web.vaadin.desktop.admin.superadmin.SuperAdminProfilePage;
 import xyz.cleangone.web.vaadin.desktop.org.*;
 import xyz.cleangone.web.vaadin.desktop.org.profile.ProfilePage;
 import xyz.cleangone.web.vaadin.desktop.user.LoginPage;
+import xyz.cleangone.web.vaadin.util.VaadinUtils;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -60,7 +61,7 @@ public class MyUI extends UI
     @Override
     protected void init(VaadinRequest vaadinRequest)
     {
-//        SHOW_BACKBROUND_COLORS = true;
+        VaadinUtils.SHOW_BACKBROUND_COLORS = true;
 
         new Navigator(this, this);
         UI.getCurrent().setResizeLazy(true);
@@ -83,8 +84,8 @@ public class MyUI extends UI
         Navigator nav = getNavigator();
         nav.addView(LoginPage.NAME, loginPage);
         nav.addView(OrgPage.NAME, orgPage);
-        nav.addView(PayPage.NAME, new PayPage());
-        nav.addView(PlayPage.NAME, new PlayPage());
+        nav.addView(PaysAdminPage.NAME, new PaysAdminPage());
+        nav.addView(PlaysAdminPage.NAME, new PlaysAdminPage());
 
         nav.addView(SuperAdminPage.NAME, new SuperAdminPage());
         nav.addView(SuperAdminProfilePage.NAME, new SuperAdminProfilePage());

@@ -1,14 +1,12 @@
-package fit.pay2play.web.vaadin.desktop.org.profile;
+package fit.pay2play.web.vaadin.desktop;
 
 import com.vaadin.navigator.View;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.themes.ValoTheme;
 import fit.pay2play.data.aws.dynamo.entity.Pay;
-import fit.pay2play.data.manager.Pay2PlayManager;
-import xyz.cleangone.data.aws.dynamo.entity.person.User;
+import fit.pay2play.web.vaadin.desktop.components.PayAdmin;
 import xyz.cleangone.web.manager.SessionManager;
-import xyz.cleangone.web.vaadin.desktop.org.BasePage;
 import xyz.cleangone.web.vaadin.ui.EntityGrid;
 import xyz.cleangone.web.vaadin.ui.PageDisplayType;
 import xyz.cleangone.web.vaadin.util.CountingDataProvider;
@@ -19,18 +17,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static fit.pay2play.data.aws.dynamo.entity.Pay.*;
-import static fit.pay2play.data.aws.dynamo.entity.Play.*;
-import static xyz.cleangone.data.aws.dynamo.entity.base.BaseNamedEntity.*;
 import static xyz.cleangone.web.vaadin.util.VaadinUtils.*;
 
-public class PayPage extends BasePayPlayPage implements View
+public class PaysAdminPage extends BaseAdminPage implements View
 {
     public static final String NAME = "Pay";
 
     private List<Pay> pays = new ArrayList<>();
     private Grid<Pay> payGrid;
+    private PayAdmin payAdmin;
 
-    protected void set()
+    protected PageDisplayType set(SessionManager sessionManager)
+    {
+        super.set(sessionManager);
+        payAdmin = new PayAdmin(p2pMgr, actionBar, PaysAdminPage.this);
+
+        set();
+        return PageDisplayType.NotApplicable;
+    }
+
+    public void set()
     {
         // todo - need to check user EntityType.Pay, but that means replacing enum w/ extendable class
 //        if (changeManager.unchanged(user) &&
@@ -39,17 +45,17 @@ public class PayPage extends BasePayPlayPage implements View
 //            return;
 //        }
 
+        resetHeader();
         changeManager.reset(user);
 
         pays.clear();
         pays.addAll(p2pMgr.getPays(user.getId()));
+        payGrid = new PayGrid();
         payGrid.setHeightByRows(pays.size() > 5 ? pays.size() + 1 : 5);
 
         // would like this in set(sessionMgr) but updates are not being reflected in grid
         // caching?
         mainLayout.removeAllComponents();
-
-        payGrid = new PayGrid();
         mainLayout.addComponents(getAddPayLayout(), payGrid);
         mainLayout.setExpandRatio(payGrid, 1.0f);
     }
@@ -77,25 +83,29 @@ public class PayPage extends BasePayPlayPage implements View
         return layout;
     }
 
+
     private class PayGrid extends EntityGrid<Pay>
     {
         PayGrid()
         {
             setSizeFull();
 
-            addSortColumn(NAME_FIELD, Pay::getName, Pay::setName);
+            Grid.Column<Pay, LinkButton> nameCol = addComponentColumn(this::buildNameLinkButton);
+            nameCol.setId(NAME_FIELD.getName());
+            nameCol.setComparator((link1, link2) -> link1.getName().compareTo(link2.getName()));
+
             addBigDecimalColumn(VALUE_FIELD, Pay::getValue);
             addBooleanColumn(REQUIRED_FIELD, Pay::isRequired, Pay::setRequired);
 
             addDeleteColumn();
 
-            getEditor().setEnabled(true);
-            getEditor().addSaveListener(event -> {
-                Pay pay = event.getBean();
-                p2pMgr.save(pay);
-                actionBar.displayMessage("Pay updates saved");
-                set();
-            });
+            getEditor().setEnabled(false);
+//            getEditor().addSaveListener(event -> {
+//                Pay pay = event.getBean();
+//                p2pMgr.save(pay);
+//                actionBar.displayMessage("Pay updates saved");
+//                set();
+//            });
 
             CountingDataProvider<Pay> dataProvider = new CountingDataProvider<>(pays, countLabel);
             setDataProvider(dataProvider);
@@ -112,6 +122,14 @@ public class PayPage extends BasePayPlayPage implements View
         private Button buildDeleteButton(Pay pay)
         {
             return (buildDeleteButton(pay, pay.getName()));
+        }
+
+        private LinkButton buildNameLinkButton(Pay pay)
+        {
+            return new LinkButton(pay.getName(), e -> {
+                payAdmin.setPay(pay);
+                setMainLayout(payAdmin);
+            });
         }
 
         @Override

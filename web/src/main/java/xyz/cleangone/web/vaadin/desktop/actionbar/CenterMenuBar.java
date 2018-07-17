@@ -1,8 +1,8 @@
 package xyz.cleangone.web.vaadin.desktop.actionbar;
 
 import com.vaadin.icons.VaadinIcons;
-import fit.pay2play.web.vaadin.desktop.org.profile.PayPage;
-import fit.pay2play.web.vaadin.desktop.org.profile.PlayPage;
+import fit.pay2play.web.vaadin.desktop.PaysAdminPage;
+import fit.pay2play.web.vaadin.desktop.PlaysAdminPage;
 import xyz.cleangone.data.aws.dynamo.entity.lastTouched.EntityType;
 import xyz.cleangone.data.aws.dynamo.entity.organization.Organization;
 import xyz.cleangone.web.manager.SessionManager;
@@ -34,20 +34,12 @@ public class CenterMenuBar extends BaseMenuBar
             return PageDisplayType.NoChange;
         }
 
-        // todo - move cart to right of events (old calendar spot)
-
-
         changeManager.reset(org);
         removeItems();
 
-        if (!sessionMgr.isMobileBrowser())
-        {
-            addIconOnlyItem("Home", VaadinIcons.HOME, getNavigateCmd(OrgPage.NAME));
-        }
-
-        addIconOnlyItem(PlayPage.NAME, VaadinIcons.SMILEY_O, getNavigateCmd(PlayPage.NAME));
-        addIconOnlyItem(PayPage.NAME, VaadinIcons.FROWN_O, getNavigateCmd(PayPage.NAME));
-
+        addNavigateItem(PaysAdminPage.NAME);
+        if (!sessionMgr.isMobileBrowser()) { addIconOnlyItem("Home", VaadinIcons.HOME, getNavigateCmd(OrgPage.NAME)); }
+        addNavigateItem(PlaysAdminPage.NAME);
 
         msgMenuItem = addItem(sessionMgr.getAndClearMsg(), null, null);
 
