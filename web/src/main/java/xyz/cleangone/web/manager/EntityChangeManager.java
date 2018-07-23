@@ -47,15 +47,15 @@ public class EntityChangeManager
     }
     public boolean unchangedEntity(String entityId)
     {
-        return unchanged(entityId, EntityType.Entity);
+        return unchanged(entityId, EntityType.ENTITY);
     }
     public boolean unchangedEntity(BaseEntity entity)
     {
-        return unchanged(entity, EntityType.Entity);
+        return unchanged(entity, EntityType.ENTITY);
     }
     public boolean unchangedEntity(List<? extends BaseEntity> entities)
     {
-        return unchanged(entities, EntityType.Entity);
+        return unchanged(entities, EntityType.ENTITY);
     }
 
     public void reset()

@@ -1,9 +1,10 @@
-package fit.pay2play.web.vaadin.desktop.components;
+package fit.pay2play.web.vaadin.desktop.pay;
 
 import com.vaadin.ui.*;
 import fit.pay2play.data.aws.dynamo.entity.Pay;
 import fit.pay2play.data.manager.Pay2PlayManager;
-import fit.pay2play.web.vaadin.desktop.BaseAdminPage;
+import fit.pay2play.web.vaadin.desktop.base.BaseAdminPage;
+import fit.pay2play.web.vaadin.desktop.base.BaseAdminLayout;
 import xyz.cleangone.data.aws.dynamo.entity.base.EntityField;
 import xyz.cleangone.web.vaadin.ui.MessageDisplayer;
 import xyz.cleangone.web.vaadin.ui.TwoDecimalField;
@@ -27,6 +28,7 @@ public class PayAdmin extends BaseAdminLayout
         formLayout.removeAllComponents();
 
         formLayout.addComponent(createTextField(NAME_FIELD));
+        formLayout.addComponent(createTextField(PLURAL_NAME_FIELD));
         formLayout.addComponent(createTwoDecimalField(VALUE_FIELD));
         formLayout.addComponent(createCheckBox(REQUIRED_FIELD));
     }

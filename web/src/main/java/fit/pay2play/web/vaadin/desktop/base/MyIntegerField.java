@@ -1,4 +1,4 @@
-package fit.pay2play.web.vaadin.desktop;
+package fit.pay2play.web.vaadin.desktop.base;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.Result;

@@ -10,8 +10,8 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.WebBrowser;
 import com.vaadin.ui.*;
-import fit.pay2play.web.vaadin.desktop.PaysAdminPage;
-import fit.pay2play.web.vaadin.desktop.PlaysAdminPage;
+import fit.pay2play.web.vaadin.desktop.pay.PaysAdminPage;
+import fit.pay2play.web.vaadin.desktop.play.PlaysAdminPage;
 import xyz.cleangone.data.aws.dynamo.entity.item.CatalogItem;
 import xyz.cleangone.data.aws.dynamo.entity.organization.OrgTag;
 import xyz.cleangone.data.aws.dynamo.entity.organization.Organization;
@@ -61,7 +61,7 @@ public class MyUI extends UI
     @Override
     protected void init(VaadinRequest vaadinRequest)
     {
-        VaadinUtils.SHOW_BACKBROUND_COLORS = true;
+        //VaadinUtils.SHOW_BACKBROUND_COLORS = true;
 
         new Navigator(this, this);
         UI.getCurrent().setResizeLazy(true);

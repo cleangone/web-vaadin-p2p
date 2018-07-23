@@ -1,4 +1,4 @@
-package fit.pay2play.web.vaadin.desktop;
+package fit.pay2play.web.vaadin.desktop.base;
 
 import com.vaadin.navigator.View;
 import com.vaadin.ui.Button;
@@ -12,7 +12,7 @@ import xyz.cleangone.web.vaadin.ui.PageDisplayType;
 
 import static xyz.cleangone.web.vaadin.util.VaadinUtils.*;
 
-public abstract class BaseAdminPage extends BasePage implements View
+public abstract class BaseAdminPage extends BasePage implements View, Settable
 {
     protected Pay2PlayManager p2pMgr;
     protected User user;
@@ -39,24 +39,5 @@ public abstract class BaseAdminPage extends BasePage implements View
     {
         mainLayout.removeAllComponents();
         mainLayout.addComponent(component);
-    }
-
-    class LinkButton extends Button
-    {
-        String name;
-
-        LinkButton(String name, ClickListener listener)
-        {
-            super(name);
-            this.name = name;
-            addStyleName(ValoTheme.BUTTON_LINK);
-
-            addClickListener(listener);
-        }
-
-        String getName()
-        {
-            return name;
-        }
     }
 }

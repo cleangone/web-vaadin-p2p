@@ -2,7 +2,7 @@ package xyz.cleangone.web.vaadin.desktop.org;
 
 import com.vaadin.navigator.View;
 import com.vaadin.ui.*;
-import fit.pay2play.web.vaadin.desktop.ActionsLayout;
+import fit.pay2play.web.vaadin.desktop.action.ActionsLayout;
 import xyz.cleangone.data.aws.dynamo.entity.organization.Organization;
 import xyz.cleangone.data.aws.dynamo.entity.person.User;
 import xyz.cleangone.web.manager.SessionManager;
@@ -59,7 +59,7 @@ public class OrgPage extends BasePage implements View
 
         if (user != null)
         {
-            mainLayout.addComponent(new ActionsLayout(user));
+            mainLayout.addComponent(new ActionsLayout(user, actionBar));
         }
 
 

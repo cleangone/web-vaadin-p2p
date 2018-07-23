@@ -26,8 +26,8 @@ public class LeftMenuBar extends BaseMenuBar
 
         if (changeManager.unchanged(user) &&
             changeManager.unchanged(org) &&
-            changeManager.unchanged(user, EntityType.Entity) &&
-            changeManager.unchanged(org, EntityType.Entity, EntityType.Tag))
+            changeManager.unchanged(user, EntityType.ENTITY) &&
+            changeManager.unchanged(org, EntityType.ENTITY, EntityType.TAG))
         {
             return PageDisplayType.NoChange;
         }

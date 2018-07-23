@@ -26,8 +26,8 @@ public class RightMenuBar extends BaseMenuBar
         User user = userMgr.getUser();
 
         if (changeManager.unchanged(user) &&
-            changeManager.unchanged(user, EntityType.Entity) &&
-            (user == null  || changeManager.unchanged(user.getId(), EntityType.Entity)))
+            changeManager.unchanged(user, EntityType.ENTITY) &&
+            (user == null  || changeManager.unchanged(user.getId(), EntityType.ENTITY)))
         {
             return PageDisplayType.NoChange;
         }

@@ -1,8 +1,8 @@
 package xyz.cleangone.web.vaadin.desktop.actionbar;
 
 import com.vaadin.icons.VaadinIcons;
-import fit.pay2play.web.vaadin.desktop.PaysAdminPage;
-import fit.pay2play.web.vaadin.desktop.PlaysAdminPage;
+import fit.pay2play.web.vaadin.desktop.pay.PaysAdminPage;
+import fit.pay2play.web.vaadin.desktop.play.PlaysAdminPage;
 import xyz.cleangone.data.aws.dynamo.entity.lastTouched.EntityType;
 import xyz.cleangone.data.aws.dynamo.entity.organization.Organization;
 import xyz.cleangone.web.manager.SessionManager;
@@ -29,7 +29,7 @@ public class CenterMenuBar extends BaseMenuBar
         }
 
         if (changeManager.unchanged(org) &&
-            changeManager.unchanged(org, EntityType.Entity, EntityType.Event))
+            changeManager.unchanged(org, EntityType.ENTITY, EntityType.ENTITY))
         {
             return PageDisplayType.NoChange;
         }
