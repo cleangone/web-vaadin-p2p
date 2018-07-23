@@ -38,12 +38,18 @@ public class ActionsLayout extends VerticalLayout implements Settable
     {
         removeAllComponents();
 
+        ActionsCandlestickChart chart = new ActionsCandlestickChart(user, p2pMgr, this);
+        if (user == null)
+        {
+            addComponents(chart);
+            return;
+        }
+
         HorizontalLayout topLayout = horizontal(MARGIN_FALSE, SPACING_TRUE, WIDTH_100_PCT, BACK_RED);
         Component addPlay = getAddPlayLayout();
         topLayout.addComponents(getAddPayLayout(), addPlay);
         topLayout.setComponentAlignment(addPlay, new Alignment(AlignmentInfo.Bits.ALIGNMENT_RIGHT));
 
-        ActionsCandlestickChart chart = new ActionsCandlestickChart(user, p2pMgr, this);
         ActionsGrid grid = new ActionsGrid(user, p2pMgr, this);
         addComponents(topLayout, chart, grid);
         setExpandRatio(grid, 1.0f);

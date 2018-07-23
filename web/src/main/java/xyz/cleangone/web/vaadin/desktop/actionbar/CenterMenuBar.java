@@ -28,18 +28,21 @@ public class CenterMenuBar extends BaseMenuBar
             return PageDisplayType.NotApplicable;
         }
 
-        if (changeManager.unchanged(org) &&
-            changeManager.unchanged(org, EntityType.ENTITY, EntityType.ENTITY))
-        {
-            return PageDisplayType.NoChange;
-        }
+//        if (changeManager.unchanged(org) &&
+//            changeManager.unchanged(org, EntityType.ENTITY, EntityType.ENTITY))
+//        {
+//            return PageDisplayType.NoChange;
+//        }
 
         changeManager.reset(org);
         removeItems();
 
-        addNavigateItem(PaysAdminPage.NAME);
-        if (!sessionMgr.isMobileBrowser()) { addIconOnlyItem("Home", VaadinIcons.HOME, getNavigateCmd(OrgPage.NAME)); }
-        addNavigateItem(PlaysAdminPage.NAME);
+        if (sessionMgr.hasUser())
+        {
+            addNavigateItem(PaysAdminPage.NAME);
+            if (!sessionMgr.isMobileBrowser()) { addIconOnlyItem("Home", VaadinIcons.HOME, getNavigateCmd(OrgPage.NAME)); }
+            addNavigateItem(PlaysAdminPage.NAME);
+        }
 
         msgMenuItem = addItem(sessionMgr.getAndClearMsg(), null, null);
 

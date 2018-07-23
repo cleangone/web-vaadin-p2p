@@ -57,10 +57,7 @@ public class OrgPage extends BasePage implements View
             mainLayout.addComponent(introLayout);
         }
 
-        if (user != null)
-        {
-            mainLayout.addComponent(new ActionsLayout(user, actionBar));
-        }
+        mainLayout.addComponent(new ActionsLayout(user, actionBar));
 
         return PageDisplayType.ObjectRetrieval;
     }
