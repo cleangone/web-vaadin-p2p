@@ -68,7 +68,6 @@ public class BannerUtil
         else return "calc(50% + " +  offset + "px)";
     }
 
-
     public static Component getHtml(Organization org, boolean isMobileBrowser, UI ui)
     {
         return getLabelButton(org, isMobileBrowser, e -> ui.getNavigator().navigateTo(OrgPage.NAME));
@@ -78,7 +77,6 @@ public class BannerUtil
     {
         return getLabelButton(event, sessionMgr.isMobileBrowser());
     }
-
 
     private static LabelButton getLabelButton(BaseOrg baseOrg, boolean isMobileBrowser)
     {
@@ -124,7 +122,4 @@ public class BannerUtil
              layout.addComponent(component, "bottom:5px;left:" + leftOffset + "px");  // bottom was 20
         }
     }
-
-
-
 }

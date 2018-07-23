@@ -22,7 +22,6 @@ public class BannerSingle extends HorizontalLayout implements BannerComponent
 
         boolean isMobileBrowser = sessionMgr.isMobileBrowser();
 
-
         OrgManager orgMgr = sessionMgr.getOrgManager();
         Organization org = orgMgr.getOrg();
         AbsoluteLayout orgBanner = getBanner(org, isMobileBrowser);

@@ -61,7 +61,7 @@ public class MyUI extends UI
     @Override
     protected void init(VaadinRequest vaadinRequest)
     {
-        //VaadinUtils.SHOW_BACKBROUND_COLORS = true;
+//        VaadinUtils.SHOW_BACKBROUND_COLORS = true;
 
         new Navigator(this, this);
         UI.getCurrent().setResizeLazy(true);
