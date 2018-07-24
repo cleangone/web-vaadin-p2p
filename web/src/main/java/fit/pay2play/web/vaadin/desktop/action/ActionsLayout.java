@@ -8,6 +8,7 @@ import fit.pay2play.data.aws.dynamo.entity.Pay;
 import fit.pay2play.data.aws.dynamo.entity.Play;
 import fit.pay2play.data.manager.Pay2PlayManager;
 import fit.pay2play.web.vaadin.desktop.action.components.ActionsCandlestickChart;
+import fit.pay2play.web.vaadin.desktop.action.components.ActionsCompareMultipleChart;
 import fit.pay2play.web.vaadin.desktop.action.components.ActionsGrid;
 import fit.pay2play.web.vaadin.desktop.base.Settable;
 import xyz.cleangone.data.aws.dynamo.entity.person.User;
@@ -38,7 +39,9 @@ public class ActionsLayout extends VerticalLayout implements Settable
     {
         removeAllComponents();
 
-        ActionsCandlestickChart chart = new ActionsCandlestickChart(user, p2pMgr, this);
+//        ActionsCandlestickChart chart = new ActionsCandlestickChart(user, p2pMgr, this);
+
+        Component chart = new ActionsCompareMultipleChart(user, p2pMgr, this);
         if (user == null)
         {
             addComponents(chart);
