@@ -18,6 +18,7 @@ import xyz.cleangone.web.vaadin.util.MultiFieldFilter;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import static fit.pay2play.data.aws.dynamo.entity.Action.DESC_FIELD;
@@ -32,7 +33,7 @@ public class ActionsGrid extends EntityGrid<Action>
     private final Pay2PlayManager p2pMgr;
     private final ActionsLayout actionsLayout;
 
-    public ActionsGrid(User user, Pay2PlayManager p2pMgr, ActionsLayout actionsLayout)
+    public ActionsGrid(User user, Date date, Pay2PlayManager p2pMgr, ActionsLayout actionsLayout)
     {
         this.p2pMgr = p2pMgr;
         this.actionsLayout = actionsLayout;
@@ -44,7 +45,7 @@ public class ActionsGrid extends EntityGrid<Action>
         addBigDecimalColumn(TOTAL_VALUE_FIELD, Action::getTotalValue);
         addDeleteColumn();
 
-        List<Action> actions = p2pMgr.getActions(user.getId());
+        List<Action> actions = p2pMgr.getActions(user.getId(), date);
         CountingDataProvider<Action> dataProvider = new CountingDataProvider<>(actions, countLabel);
         setDataProvider(dataProvider);
 
@@ -58,12 +59,8 @@ public class ActionsGrid extends EntityGrid<Action>
     private LinkButton buildLinkButton(Action action)
     {
         return new LinkButton(action.getDescription(), e -> {
-
             actionsLayout.editAction(action);
-            //            actionAdmin.set(action);
-//            removeAllComponents();
-//            addComponents(actionAdmin);
-        });
+         });
     }
 
     private void addDeleteColumn()

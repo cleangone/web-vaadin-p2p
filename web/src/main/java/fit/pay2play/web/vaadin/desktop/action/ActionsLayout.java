@@ -7,13 +7,13 @@ import fit.pay2play.data.aws.dynamo.entity.Action;
 import fit.pay2play.data.aws.dynamo.entity.Pay;
 import fit.pay2play.data.aws.dynamo.entity.Play;
 import fit.pay2play.data.manager.Pay2PlayManager;
-import fit.pay2play.web.vaadin.desktop.action.components.ActionsCandlestickChart;
-import fit.pay2play.web.vaadin.desktop.action.components.ActionsCompareMultipleChart;
+import fit.pay2play.web.vaadin.desktop.action.components.ActionsChart;
 import fit.pay2play.web.vaadin.desktop.action.components.ActionsGrid;
 import fit.pay2play.web.vaadin.desktop.base.Settable;
 import xyz.cleangone.data.aws.dynamo.entity.person.User;
 import xyz.cleangone.web.vaadin.ui.MessageDisplayer;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +24,7 @@ public class ActionsLayout extends VerticalLayout implements Settable
     private User user;
     private Pay2PlayManager p2pMgr = new Pay2PlayManager();
     private ActionAdmin actionAdmin;
+    private ActionsGrid actionsGrid;
 
     public ActionsLayout(User user, MessageDisplayer messageDisplayer)
     {
@@ -41,7 +42,7 @@ public class ActionsLayout extends VerticalLayout implements Settable
 
 //        ActionsCandlestickChart chart = new ActionsCandlestickChart(user, p2pMgr, this);
 
-        Component chart = new ActionsCompareMultipleChart(user, p2pMgr, this);
+        Component chart = new ActionsChart(user, p2pMgr, this);
         if (user == null)
         {
             addComponents(chart);
@@ -53,9 +54,9 @@ public class ActionsLayout extends VerticalLayout implements Settable
         topLayout.addComponents(getAddPayLayout(), addPlay);
         topLayout.setComponentAlignment(addPlay, new Alignment(AlignmentInfo.Bits.ALIGNMENT_RIGHT));
 
-        ActionsGrid grid = new ActionsGrid(user, p2pMgr, this);
-        addComponents(topLayout, chart, grid);
-        setExpandRatio(grid, 1.0f);
+        actionsGrid = new ActionsGrid(user, new Date(), p2pMgr, this);
+        addComponents(topLayout, chart, actionsGrid);
+        setExpandRatio(actionsGrid, 1.0f);
     }
 
     public void editAction(Action action)
@@ -63,6 +64,15 @@ public class ActionsLayout extends VerticalLayout implements Settable
         actionAdmin.set(action);
         removeAllComponents();
         addComponents(actionAdmin);
+    }
+
+    public void setGrid(Date date)
+    {
+        removeComponent(actionsGrid);
+
+        actionsGrid = new ActionsGrid(user, date, p2pMgr, this);
+        addComponent(actionsGrid);
+        setExpandRatio(actionsGrid, 1.0f);
     }
 
     private Component getAddPayLayout()
