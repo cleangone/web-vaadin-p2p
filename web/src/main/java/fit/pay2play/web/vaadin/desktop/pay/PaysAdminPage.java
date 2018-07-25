@@ -94,18 +94,10 @@ public class PaysAdminPage extends BaseAdminPage implements View
             Grid.Column<Pay, LinkButton> nameCol = addLinkButtonColumn(NAME_FIELD, this::buildNameLinkButton);
             nameCol.setComparator((link1, link2) -> link1.getName().compareTo(link2.getName()));
 
+            addColumn(DISPLAY_ORDER_FIELD, Pay::getDisplayOrder);
             addBigDecimalColumn(VALUE_FIELD, Pay::getValue);
             addBooleanColumn(REQUIRED_FIELD, Pay::isRequired, Pay::setRequired);
-
             addDeleteColumn();
-
-            getEditor().setEnabled(false);
-//            getEditor().addSaveListener(event -> {
-//                Pay pay = event.getBean();
-//                p2pMgr.save(pay);
-//                actionBar.displayMessage("Pay updates saved");
-//                set();
-//            });
 
             CountingDataProvider<Pay> dataProvider = new CountingDataProvider<>(pays, countLabel);
             setDataProvider(dataProvider);

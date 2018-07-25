@@ -23,7 +23,6 @@ public class OrgPage extends BasePage implements View
     public static final String NAME = "Org";
 
     private Organization org;
-    private User user;
 
     public OrgPage(boolean isMobileBrowser)
     {
@@ -40,7 +39,6 @@ public class OrgPage extends BasePage implements View
         super.set(sessionManager);
 
         org = orgMgr.getOrg();
-        user = sessionManager.getUser();
         resetHeader();
 
         return set();
@@ -57,7 +55,7 @@ public class OrgPage extends BasePage implements View
             mainLayout.addComponent(introLayout);
         }
 
-        mainLayout.addComponent(new ActionsLayout(user, actionBar));
+        mainLayout.addComponent(new ActionsLayout(sessionMgr, actionBar));
 
         return PageDisplayType.ObjectRetrieval;
     }

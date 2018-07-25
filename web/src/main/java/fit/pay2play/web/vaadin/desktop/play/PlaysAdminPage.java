@@ -4,6 +4,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.themes.ValoTheme;
+import fit.pay2play.data.aws.dynamo.entity.Pay;
 import fit.pay2play.data.aws.dynamo.entity.Play;
 import fit.pay2play.web.vaadin.desktop.base.BaseAdminPage;
 import xyz.cleangone.web.manager.SessionManager;
@@ -86,6 +87,7 @@ public class PlaysAdminPage extends BaseAdminPage implements View
             Grid.Column<Play, LinkButton> nameCol = addLinkButtonColumn(NAME_FIELD, this::buildNameLinkButton);
             nameCol.setComparator((link1, link2) -> link1.getName().compareTo(link2.getName()));
 
+            addColumn(DISPLAY_ORDER_FIELD, Play::getDisplayOrder);
             addBigDecimalColumn(VALUE_FIELD, Play::getValue);
             addDeleteColumn();
 

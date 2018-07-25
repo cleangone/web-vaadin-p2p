@@ -21,26 +21,27 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import static fit.pay2play.data.aws.dynamo.entity.Action.DESC_FIELD;
-import static fit.pay2play.data.aws.dynamo.entity.Action.TOTAL_VALUE_FIELD;
+import static fit.pay2play.data.aws.dynamo.entity.Action.*;
 
 public class ActionsGrid extends EntityGrid<Action>
 {
     private static final EntityField ACTION_TYPE_FIELD = new EntityField("pay.actionType", " ");
-    private static final EntityField DATE_FIELD = new EntityField("action.createdDate", "Date");
+    private static final EntityField DATE_FIELD = new EntityField(UPDATED_DATE_FIELD, "Date");
     private static SimpleDateFormat SDF_MMDD = new SimpleDateFormat("MM/dd");
 
     private final Pay2PlayManager p2pMgr;
+    private final boolean isMobileBrowser;
     private final ActionsLayout actionsLayout;
 
-    public ActionsGrid(User user, Date date, Pay2PlayManager p2pMgr, ActionsLayout actionsLayout)
+    public ActionsGrid(User user, Date date, Pay2PlayManager p2pMgr, boolean isMobileBrowser, ActionsLayout actionsLayout)
     {
         this.p2pMgr = p2pMgr;
+        this.isMobileBrowser = isMobileBrowser;
         this.actionsLayout = actionsLayout;
         setSizeFull();
 
-        addDateColumn(DATE_FIELD, Action::getCreatedDate, SDF_MMDD, SortDirection.DESCENDING);
-        addColumn(ACTION_TYPE_FIELD, Action::getPayPlayDisplay);
+        addDateColumn(DATE_FIELD, Action::getUpdatedDate, SDF_MMDD, SortDirection.DESCENDING);
+        if (!isMobileBrowser) { addColumn(ACTION_TYPE_FIELD, Action::getPayPlayDisplay); }
         addLinkButtonColumn(DESC_FIELD, this::buildLinkButton, 3);
         addBigDecimalColumn(TOTAL_VALUE_FIELD, Action::getTotalValue);
         addDeleteColumn();
@@ -89,7 +90,7 @@ public class ActionsGrid extends EntityGrid<Action>
     private void setColumnFiltering(HeaderRow filterHeader, CountingDataProvider<Action> dataProvider)
     {
         MultiFieldFilter<Action> filter = new MultiFieldFilter<>(dataProvider);
-        addFilterField(ACTION_TYPE_FIELD, Action::getPayPlayDisplay, filter, filterHeader);
+        if (!isMobileBrowser) {  addFilterField(ACTION_TYPE_FIELD, Action::getPayPlayDisplay, filter, filterHeader); }
         addFilterField(DESC_FIELD, Action::getDescription, filter, filterHeader);
     }
 }

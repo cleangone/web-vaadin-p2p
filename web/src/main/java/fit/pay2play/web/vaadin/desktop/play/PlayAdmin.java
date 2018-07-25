@@ -29,6 +29,7 @@ public class PlayAdmin extends BaseAdminLayout
 
         formLayout.addComponent(createTextField(NAME_FIELD));
         formLayout.addComponent(createTextField(PLURAL_NAME_FIELD));
+        formLayout.addComponent(createTextField(DISPLAY_ORDER_FIELD));
         formLayout.addComponent(createTwoDecimalField(VALUE_FIELD));
     }
 
