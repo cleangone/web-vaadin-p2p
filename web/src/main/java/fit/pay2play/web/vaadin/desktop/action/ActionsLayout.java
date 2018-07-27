@@ -1,5 +1,6 @@
 package fit.pay2play.web.vaadin.desktop.action;
 
+import com.vaadin.event.selection.SingleSelectionListener;
 import com.vaadin.shared.ui.AlignmentInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
@@ -10,6 +11,7 @@ import fit.pay2play.data.manager.Pay2PlayManager;
 import fit.pay2play.web.vaadin.desktop.action.components.ActionsChart;
 import fit.pay2play.web.vaadin.desktop.action.components.ActionsGrid;
 import fit.pay2play.web.vaadin.desktop.base.Settable;
+import xyz.cleangone.data.aws.dynamo.entity.base.BaseNamedEntity;
 import xyz.cleangone.data.aws.dynamo.entity.person.User;
 import xyz.cleangone.web.manager.SessionManager;
 import xyz.cleangone.web.vaadin.ui.MessageDisplayer;
@@ -26,7 +28,7 @@ public class ActionsLayout extends VerticalLayout implements Settable
     private final User user;
     private Pay2PlayManager p2pMgr = new Pay2PlayManager();
     private ActionAdmin actionAdmin;
-    private ActionsGrid actionsGrid;
+    private VerticalLayout actionsGridLayout = vertical(MARGIN_FALSE, SPACING_TRUE, BACK_YELLOW);
 
     public ActionsLayout(SessionManager sessionMgr, MessageDisplayer messageDisplayer)
     {
@@ -42,10 +44,7 @@ public class ActionsLayout extends VerticalLayout implements Settable
     public void set()
     {
         removeAllComponents();
-
-//        ActionsCandlestickChart chart = new ActionsCandlestickChart(user, p2pMgr, this);
-
-        Component chart = new ActionsChart(user, p2pMgr, this);
+        Component chart = new ActionsChart(user, p2pMgr, sessionMgr.isMobileBrowser(), this);
         if (user == null)
         {
             addComponents(chart);
@@ -66,9 +65,9 @@ public class ActionsLayout extends VerticalLayout implements Settable
             addComponent(topLayout);
         }
 
-        actionsGrid = new ActionsGrid(user, new Date(), p2pMgr, sessionMgr.isMobileBrowser(), this);
-        addComponents(chart, actionsGrid);
-        setExpandRatio(actionsGrid, 1.0f);
+        setActionsGrid(new Date());
+        addComponents(chart, actionsGridLayout);
+        setExpandRatio(actionsGridLayout, 1.0f);
     }
 
     public void editAction(Action action)
@@ -78,20 +77,20 @@ public class ActionsLayout extends VerticalLayout implements Settable
         addComponents(actionAdmin);
     }
 
-    public void setGrid(Date date)
+    public void setActionsGrid(Date date)
     {
-        removeComponent(actionsGrid);
+        actionsGridLayout.removeAllComponents();
 
-        actionsGrid = new ActionsGrid(user, date, p2pMgr, sessionMgr.isMobileBrowser(), this);
-        addComponent(actionsGrid);
-        setExpandRatio(actionsGrid, 1.0f);
+        ActionsGrid actionsGrid = new ActionsGrid(user, date, p2pMgr, sessionMgr.isMobileBrowser(), this);
+        actionsGridLayout.addComponent(actionsGrid);
+        actionsGridLayout.setExpandRatio(actionsGrid, 1.0f);
     }
 
     private Component getAddPayLayout()
     {
         HorizontalLayout layout = horizontal(MARGIN_FALSE, SPACING_TRUE, BACK_GREEN);
 
-        List<Pay> pays = p2pMgr.getPays(user.getId());
+        List<Pay> pays = p2pMgr.getEnabledPays(user.getId());
         if (pays.size() > 0) { layout.addComponent(createButton(pays.get(0))); }
         if (pays.size() > 1) { layout.addComponent(createButton(pays.get(1))); }
 
@@ -101,11 +100,7 @@ public class ActionsLayout extends VerticalLayout implements Settable
                 .filter(p -> p != pays.get(0) && p != pays.get(1))
                 .collect(Collectors.toList());
 
-            ComboBox<Pay> comboBox = new ComboBox<>();
-            comboBox.addStyleName(ValoTheme.TEXTFIELD_TINY);
-            comboBox.setItems(remainingPays);
-            comboBox.setPlaceholder("More Pay");
-            comboBox.setItemCaptionGenerator(Pay::getName);
+            ComboBox<Pay> comboBox = createComboBox(new ComboBox<Pay>(), "Pay", remainingPays);
             comboBox.addSelectionListener(event -> {
                 Pay pay = event.getSelectedItem().orElse(null);
                 if (pay != null)
@@ -125,22 +120,17 @@ public class ActionsLayout extends VerticalLayout implements Settable
     {
         HorizontalLayout layout = horizontal(MARGIN_FALSE, SPACING_TRUE, BACK_BLUE);
 
-        List<Play> plays = p2pMgr.getPlays(user.getId());
+        List<Play> plays = p2pMgr.getEnabledPlays(user.getId());
         if (plays.size() > 0) { layout.addComponent(createButton(plays.get(0))); }
         if (plays.size() > 1) { layout.addComponent(createButton(plays.get(1))); }
 
         if (plays.size() > 2)
         {
-            ComboBox<Play> comboBox = new ComboBox<>();
-
             List<Play> remainingPlays = plays.stream()
                 .filter(p -> p != plays.get(0) && p != plays.get(1))
                 .collect(Collectors.toList());
 
-            comboBox.addStyleName(ValoTheme.TEXTFIELD_TINY);
-            comboBox.setItems(remainingPlays);
-            comboBox.setPlaceholder("More Play");
-            comboBox.setItemCaptionGenerator(Play::getName);
+            ComboBox<Play> comboBox = createComboBox(new ComboBox<Play>(), "Play", remainingPlays);
             comboBox.addSelectionListener(event -> {
                 Play play = event.getSelectedItem().orElse(null);
                 if (play != null)
@@ -156,9 +146,22 @@ public class ActionsLayout extends VerticalLayout implements Settable
         return layout;
     }
 
+    private <T extends Play> ComboBox<T> createComboBox(ComboBox<T> comboBox, String name, List<T> items)
+    {
+        comboBox.setPlaceholder("More " + name);
+        comboBox.addStyleName(ValoTheme.TEXTFIELD_TINY);
+        comboBox.setTextInputAllowed(false);
+        comboBox.setItems(items);
+        comboBox.setItemCaptionGenerator(T::getDisplayShortName);
+        comboBox.setWidth(10, Unit.EM);
+        comboBox.setPopupWidth(null);
+
+        return comboBox;
+    }
+
     private Button createButton(Pay pay)
     {
-        return createButton(pay.getName(), event -> {
+        return createButton(pay.getDisplayShortName(), event -> {
             p2pMgr.addAction(pay);
             set();
         });
@@ -166,7 +169,7 @@ public class ActionsLayout extends VerticalLayout implements Settable
 
     private Button createButton(Play play)
     {
-        return createButton(play.getName(), event -> {
+        return createButton(play.getDisplayShortName(), event -> {
             p2pMgr.addAction(play);
             set();
         });

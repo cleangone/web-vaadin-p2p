@@ -50,7 +50,7 @@ public class PaysAdminPage extends BaseAdminPage implements View
         changeManager.reset(user);
 
         pays.clear();
-        pays.addAll(p2pMgr.getPays(user.getId()));
+        pays.addAll(p2pMgr.getPaysWithActions(user.getId()));
         payGrid = new PayGrid();
         payGrid.setHeightByRows(pays.size() > 5 ? pays.size() + 1 : 5);
 
@@ -94,9 +94,11 @@ public class PaysAdminPage extends BaseAdminPage implements View
             Grid.Column<Pay, LinkButton> nameCol = addLinkButtonColumn(NAME_FIELD, this::buildNameLinkButton);
             nameCol.setComparator((link1, link2) -> link1.getName().compareTo(link2.getName()));
 
+            addColumn(SHORT_NAME_FIELD, Pay::getShortName);
+            addBooleanColumn(ENABLED_FIELD, Pay::getEnabled);
             addColumn(DISPLAY_ORDER_FIELD, Pay::getDisplayOrder);
             addBigDecimalColumn(VALUE_FIELD, Pay::getValue);
-            addBooleanColumn(REQUIRED_FIELD, Pay::isRequired, Pay::setRequired);
+            //addBooleanColumn(REQUIRED_FIELD, Pay::isRequired, Pay::setRequired);
             addDeleteColumn();
 
             CountingDataProvider<Pay> dataProvider = new CountingDataProvider<>(pays, countLabel);
@@ -113,7 +115,9 @@ public class PaysAdminPage extends BaseAdminPage implements View
         }
         private Button buildDeleteButton(Pay pay)
         {
-            return (buildDeleteButton(pay, pay.getName()));
+            Button button = buildDeleteButton(pay, pay.getName());
+            if (pay.getHasActions()) { button.setEnabled(false); }
+            return button;
         }
 
         private LinkButton buildNameLinkButton(Pay pay)

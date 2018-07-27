@@ -21,16 +21,18 @@ public class ActionsChart extends AbstractVaadinChartExample implements PointCli
 {
     private final User user;
     private final Pay2PlayManager p2pMgr;
+    private final boolean isMobileBrowser;
     private final ActionsLayout actionsLayout;
 
     private DataSeries paySeries = createDataSeries("Pay", SolidColor.GREEN);;
     private DataSeries playSeries = createDataSeries("Play", SolidColor.RED);
     private DataSeries totalSeries = createDataSeries("Total", SolidColor.BLUE);;
 
-    public ActionsChart(User user, Pay2PlayManager p2pMgr, ActionsLayout actionsLayout)
+    public ActionsChart(User user, Pay2PlayManager p2pMgr, boolean isMobileBrowser, ActionsLayout actionsLayout)
     {
         this.user = user;
         this.p2pMgr = p2pMgr;
+        this.isMobileBrowser = isMobileBrowser;
         this.actionsLayout = actionsLayout;
     }
 
@@ -38,17 +40,16 @@ public class ActionsChart extends AbstractVaadinChartExample implements PointCli
     protected Component getChart()
     {
         final Chart chart = new Chart();
-        chart.setHeight("450px");
+        chart.setHeight(isMobileBrowser ? "300px" : "450px");
         chart.setWidth("100%");
         chart.setTimeline(true);
 
         Configuration configuration = chart.getConfiguration();
-//        configuration.getTitle().setText("Pay to Play");
 
         YAxis yAxis = new YAxis();
-        Labels label = new Labels();
-        label.setFormatter("this.value");
-        yAxis.setLabels(label);
+        Labels yLabel = new Labels();
+        yLabel.setFormatter("this.value");
+        yAxis.setLabels(yLabel);
 
         PlotLine plotLine = new PlotLine();
         plotLine.setValue(0);
@@ -58,6 +59,8 @@ public class ActionsChart extends AbstractVaadinChartExample implements PointCli
         configuration.addyAxis(yAxis);
 
         Tooltip tooltip = new Tooltip();
+        tooltip.getDateTimeLabelFormats().setMillisecond("%A, %b %e");
+        tooltip.setHeaderFormat("{point.key}<br/>");
         tooltip.setPointFormat("<span style=\"color:{series.color}\">{series.name}</span>: <b>{point.y}</b> <br/>");
         tooltip.setValueDecimals(2);
         configuration.setTooltip(tooltip);
@@ -70,8 +73,22 @@ public class ActionsChart extends AbstractVaadinChartExample implements PointCli
         configuration.setPlotOptions(plotOptionsSeries);
         
         RangeSelector rangeSelector = new RangeSelector();
-        rangeSelector.setSelected(0); // 1m, 3m, 6m, ytd, 1y all
+        rangeSelector.setButtons(
+            new RangeSelectorButton(RangeSelectorTimespan.WEEK, 1, "1w"),
+            new RangeSelectorButton(RangeSelectorTimespan.MONTH, 1, "1m"),
+            new RangeSelectorButton(RangeSelectorTimespan.MONTH, 3, "3m"),
+            new RangeSelectorButton(RangeSelectorTimespan.ALL, 3, "All")
+        );
+        rangeSelector.setSelected(0);
         configuration.setRangeSelector(rangeSelector);
+
+        // todo - button moved to top left
+        ResetZoomButton resetZoom = configuration.getChart().getResetZoomButton();
+        Position position = resetZoom.getPosition();
+        position.setHorizontalAlign(HorizontalAlign.LEFT);
+        position.setVerticalAlign(VerticalAlign.LOW);
+
+        if (isMobileBrowser) { configuration.getNavigator().setEnabled(false); }
 
         chart.addPointClickListener(this);
         chart.drawChart(configuration);
@@ -136,7 +153,7 @@ public class ActionsChart extends AbstractVaadinChartExample implements PointCli
         java.util.Date date = new java.util.Date();
         date.setTime(time);
 
-        actionsLayout.setGrid(date);
+        actionsLayout.setActionsGrid(date);
     }
 }
 

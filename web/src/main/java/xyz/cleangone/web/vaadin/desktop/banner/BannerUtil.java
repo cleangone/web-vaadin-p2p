@@ -29,7 +29,11 @@ public class BannerUtil
     }
     public static String getBannerHeight()
     {
-        return "250px";
+        return getBannerHeight(false);
+    }
+    public static String getBannerHeight(boolean isMobileBrowser)
+    {
+        return isMobileBrowser ? "125px" : "250px";
     }
 
     public static AbsoluteLayout getBanner(BaseOrg baseOrg)

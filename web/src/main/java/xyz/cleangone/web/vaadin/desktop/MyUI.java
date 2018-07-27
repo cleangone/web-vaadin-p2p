@@ -72,6 +72,13 @@ public class MyUI extends UI
         WebBrowser webBrowser = getCurrent().getPage().getWebBrowser();
         sessionMgr.setIsMobileBrowser(webBrowser.isIOS() || webBrowser.isAndroid() || webBrowser.isWindowsPhone());
 
+
+        ReconnectDialogConfiguration reconnect = getReconnectDialogConfiguration();
+        String dialog = reconnect.getDialogText(); // Universally hated "Server connection lost, trying to reconnect..."
+        int grace = reconnect.getDialogGracePeriod(); // 400
+        reconnect.setDialogText("");
+        reconnect.setDialogGracePeriod(10000); // 10 secs
+
         // strip off # qualifier and/or ? params
         String uri = vaadinRequest.getParameter("v-loc");
         if (uri.contains("?")) { uri = uri.substring(0, uri.indexOf("?")); }

@@ -21,6 +21,7 @@ public class BannerSingle extends HorizontalLayout implements BannerComponent
         removeAllComponents();
 
         boolean isMobileBrowser = sessionMgr.isMobileBrowser();
+        setHeight(getBannerHeight(isMobileBrowser));
 
         OrgManager orgMgr = sessionMgr.getOrgManager();
         Organization org = orgMgr.getOrg();

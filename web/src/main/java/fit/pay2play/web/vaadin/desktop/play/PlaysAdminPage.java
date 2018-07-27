@@ -7,6 +7,8 @@ import com.vaadin.ui.themes.ValoTheme;
 import fit.pay2play.data.aws.dynamo.entity.Pay;
 import fit.pay2play.data.aws.dynamo.entity.Play;
 import fit.pay2play.web.vaadin.desktop.base.BaseAdminPage;
+import xyz.cleangone.data.aws.dynamo.entity.organization.OrgTag;
+import xyz.cleangone.data.aws.dynamo.entity.organization.TagType;
 import xyz.cleangone.web.manager.SessionManager;
 import xyz.cleangone.web.vaadin.ui.EntityGrid;
 import xyz.cleangone.web.vaadin.ui.LinkButton;
@@ -43,7 +45,7 @@ public class PlaysAdminPage extends BaseAdminPage implements View
         resetHeader();
 
         plays.clear();
-        plays.addAll(p2pMgr.getPlays(user.getId()));
+        plays.addAll(p2pMgr.getPlaysWithActions(user.getId()));
         playGrid = new PlayGrid();
         playGrid.setHeightByRows(plays.size() > 5 ? plays.size() + 1 : 5);
 
@@ -87,6 +89,8 @@ public class PlaysAdminPage extends BaseAdminPage implements View
             Grid.Column<Play, LinkButton> nameCol = addLinkButtonColumn(NAME_FIELD, this::buildNameLinkButton);
             nameCol.setComparator((link1, link2) -> link1.getName().compareTo(link2.getName()));
 
+            addColumn(SHORT_NAME_FIELD, Play::getShortName);
+            addBooleanColumn(ENABLED_FIELD, Play::getEnabled);
             addColumn(DISPLAY_ORDER_FIELD, Play::getDisplayOrder);
             addBigDecimalColumn(VALUE_FIELD, Play::getValue);
             addDeleteColumn();
@@ -113,7 +117,9 @@ public class PlaysAdminPage extends BaseAdminPage implements View
         }
         private Button buildDeleteButton(Play play)
         {
-            return (buildDeleteButton(play, play.getName()));
+            Button button = buildDeleteButton(play, play.getName());
+            if (play.getHasActions()) { button.setEnabled(false); }
+            return button;
         }
 
         @Override

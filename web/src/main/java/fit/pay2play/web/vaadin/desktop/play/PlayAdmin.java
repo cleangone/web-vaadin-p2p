@@ -1,5 +1,6 @@
 package fit.pay2play.web.vaadin.desktop.play;
 
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.TextField;
 import fit.pay2play.data.aws.dynamo.entity.Play;
 import fit.pay2play.data.manager.Pay2PlayManager;
@@ -8,7 +9,6 @@ import fit.pay2play.web.vaadin.desktop.base.BaseAdminLayout;
 import xyz.cleangone.data.aws.dynamo.entity.base.EntityField;
 import xyz.cleangone.web.vaadin.ui.MessageDisplayer;
 import xyz.cleangone.web.vaadin.ui.TwoDecimalField;
-import xyz.cleangone.web.vaadin.util.VaadinUtils;
 
 import static fit.pay2play.data.aws.dynamo.entity.Play.*;
 
@@ -28,34 +28,27 @@ public class PlayAdmin extends BaseAdminLayout
         formLayout.removeAllComponents();
 
         formLayout.addComponent(createTextField(NAME_FIELD));
+        formLayout.addComponent(createTextField(SHORT_NAME_FIELD));
         formLayout.addComponent(createTextField(PLURAL_NAME_FIELD));
         formLayout.addComponent(createTextField(DISPLAY_ORDER_FIELD));
         formLayout.addComponent(createTwoDecimalField(VALUE_FIELD));
+        formLayout.addComponent(createCheckBox(ENABLED_FIELD));
     }
 
-    public TextField createTextField(EntityField field)
+    private TextField createTextField(EntityField field)
     {
-        TextField textField = VaadinUtils.createTextField(field.getDisplayName(), play.get(field), null);
-        textField.addValueChangeListener(event -> {
-            play.set(field, (String)event.getValue());
-            save(field);
-        });
-
-        return textField;
+        return createTextField(field, play);
     }
-
+    private CheckBox createCheckBox(EntityField field)
+    {
+        return createCheckBox(field, play);
+    }
     private TwoDecimalField createTwoDecimalField(EntityField field)
     {
-        TwoDecimalField twoDecimalField = createTwoDecimalField(field.getDisplayName(), play.getBigDecimal(field));
-        twoDecimalField.addValueChangeListener(event -> {
-            play.setBigDecimal(field, twoDecimalField.getBigDecimalValue());
-            save(field);
-        });
-
-        return twoDecimalField;
+        return createTwoDecimalField(field, play);
     }
 
-    private void save(EntityField field)
+    protected void save(EntityField field)
     {
         p2pMgr.save(play);
         msgDisplayer.displayMessage(field.getDisplayName() + " saved");

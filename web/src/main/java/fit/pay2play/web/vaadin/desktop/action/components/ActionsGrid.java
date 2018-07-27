@@ -4,6 +4,7 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.Query;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.components.grid.HeaderRow;
 import fit.pay2play.data.aws.dynamo.entity.Action;
@@ -18,6 +19,7 @@ import xyz.cleangone.web.vaadin.util.MultiFieldFilter;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -30,31 +32,39 @@ public class ActionsGrid extends EntityGrid<Action>
     private static SimpleDateFormat SDF_MMDD = new SimpleDateFormat("MM/dd");
 
     private final Pay2PlayManager p2pMgr;
-    private final boolean isMobileBrowser;
     private final ActionsLayout actionsLayout;
 
     public ActionsGrid(User user, Date date, Pay2PlayManager p2pMgr, boolean isMobileBrowser, ActionsLayout actionsLayout)
     {
         this.p2pMgr = p2pMgr;
-        this.isMobileBrowser = isMobileBrowser;
         this.actionsLayout = actionsLayout;
         setSizeFull();
 
-        addDateColumn(DATE_FIELD, Action::getUpdatedDate, SDF_MMDD, SortDirection.DESCENDING);
-        if (!isMobileBrowser) { addColumn(ACTION_TYPE_FIELD, Action::getPayPlayDisplay); }
-        addLinkButtonColumn(DESC_FIELD, this::buildLinkButton, 3);
-        addBigDecimalColumn(TOTAL_VALUE_FIELD, Action::getTotalValue);
-        addDeleteColumn();
+        if (!isMobileBrowser)
+        {
+            addDateColumn(DATE_FIELD, Action::getUpdatedDate, SDF_MMDD);
+            addColumn(ACTION_TYPE_FIELD, Action::getPayPlayDisplay);
+        }
 
-        List<Action> actions = p2pMgr.getActions(user.getId(), date);
+        Column<Action, LinkButton> descCol = addLinkButtonColumn(DESC_FIELD, this::buildLinkButton, 3);
+        if (isMobileBrowser) { descCol.setCaption(SDF_MMDD.format(date)); }
+        Column<Action, BigDecimal> totalCol = addBigDecimalColumn(TOTAL_VALUE_FIELD, Action::getTotalValue);
+
+        List<Action> actions = p2pMgr.getPopulatedActions(user.getId(), date);
+        actions.sort(Comparator.comparing(Action::getUpdatedDate).reversed());
+        if (isMobileBrowser) { totalCol.setCaption("Total: " + p2pMgr.sumTotalValue(actions)); }
+
         CountingDataProvider<Action> dataProvider = new CountingDataProvider<>(actions, countLabel);
         setDataProvider(dataProvider);
+        setHeightByRows(actions.size() + 1);
 
-        HeaderRow filterHeader = appendHeaderRow();
-        setColumnFiltering(filterHeader, dataProvider);
-        appendCountFooterRow(DESC_FIELD);
-
-        filterHeader.getCell(TOTAL_VALUE_FIELD.getName()).setComponent(new Label(calculateTotal(dataProvider)));
+        if (!isMobileBrowser)
+        {
+            HeaderRow filterHeader = appendHeaderRow();
+            setColumnFiltering(filterHeader, dataProvider);
+            filterHeader.getCell(TOTAL_VALUE_FIELD.getName()).setComponent(new Label(calculateTotal(dataProvider)));
+            appendCountFooterRow(DESC_FIELD);
+        }
     }
 
     private LinkButton buildLinkButton(Action action)
@@ -90,7 +100,7 @@ public class ActionsGrid extends EntityGrid<Action>
     private void setColumnFiltering(HeaderRow filterHeader, CountingDataProvider<Action> dataProvider)
     {
         MultiFieldFilter<Action> filter = new MultiFieldFilter<>(dataProvider);
-        if (!isMobileBrowser) {  addFilterField(ACTION_TYPE_FIELD, Action::getPayPlayDisplay, filter, filterHeader); }
+        addFilterField(ACTION_TYPE_FIELD, Action::getPayPlayDisplay, filter, filterHeader);
         addFilterField(DESC_FIELD, Action::getDescription, filter, filterHeader);
     }
 }
