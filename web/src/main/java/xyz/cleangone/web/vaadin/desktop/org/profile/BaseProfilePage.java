@@ -56,7 +56,10 @@ public abstract class BaseProfilePage extends BasePage implements View
             component.set(sessionMgr, ui);
         }
 
-        setMenuLeftStyle(org);
+        // remove left menu if mobile
+        if (sessionMgr.isMobileBrowser()) { mainLayout.removeComponent(leftWrapper); }
+        else { setMenuLeftStyle(org); }
+
         resetHeader();
         set();
 
@@ -85,8 +88,11 @@ public abstract class BaseProfilePage extends BasePage implements View
     {
         addStyles();
 
-        leftLayout.removeAllComponents();
-        leftLayout.addComponent(getLinksLayout());
+        if (!sessionMgr.isMobileBrowser())
+        {
+            leftLayout.removeAllComponents();
+            leftLayout.addComponent(getLinksLayout());
+        }
 
         centerLayout.removeAllComponents();
         centerLayout.addComponent(components.get(currPageType));
