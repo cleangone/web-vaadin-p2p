@@ -11,11 +11,15 @@ import fit.pay2play.data.manager.Pay2PlayManager;
 import fit.pay2play.web.vaadin.desktop.action.components.ActionsChart;
 import fit.pay2play.web.vaadin.desktop.action.components.ActionsGrid;
 import fit.pay2play.web.vaadin.desktop.base.Settable;
+import org.apache.commons.lang3.StringUtils;
 import xyz.cleangone.data.aws.dynamo.entity.base.BaseNamedEntity;
 import xyz.cleangone.data.aws.dynamo.entity.person.User;
 import xyz.cleangone.web.manager.SessionManager;
+import xyz.cleangone.web.vaadin.desktop.actionbar.ActionBar;
 import xyz.cleangone.web.vaadin.ui.MessageDisplayer;
+import xyz.cleangone.web.vaadin.util.VaadinUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,12 +34,12 @@ public class ActionsLayout extends VerticalLayout implements Settable
     private ActionAdmin actionAdmin;
     private VerticalLayout actionsGridLayout = vertical(MARGIN_FALSE, SPACING_TRUE, BACK_YELLOW);
 
-    public ActionsLayout(SessionManager sessionMgr, MessageDisplayer messageDisplayer)
+    public ActionsLayout(SessionManager sessionMgr, ActionBar actionBar)
     {
         this.sessionMgr = sessionMgr;
         user = sessionMgr.getUser();
 
-        actionAdmin = new ActionAdmin(p2pMgr, messageDisplayer, this);
+        actionAdmin = new ActionAdmin(p2pMgr, actionBar, this);
 
         setLayout(this, MARGIN_TRUE, SPACING_TRUE, BACK_DK_BLUE);
         set();
@@ -51,10 +55,13 @@ public class ActionsLayout extends VerticalLayout implements Settable
             return;
         }
 
-        Component addPay = getAddPayLayout();
-        Component addPlay = getAddPlayLayout();
+        HorizontalLayout addPay = getAddPayLayout();
+        HorizontalLayout addPlay = getAddPlayLayout();
+
         if (sessionMgr.isMobileBrowser())
         {
+            setLayout(addPay, WIDTH_100_PCT);
+            setLayout(addPlay, WIDTH_100_PCT);
             addComponents(addPay, addPlay);
         }
         else
@@ -86,21 +93,21 @@ public class ActionsLayout extends VerticalLayout implements Settable
         actionsGridLayout.setExpandRatio(actionsGrid, 1.0f);
     }
 
-    private Component getAddPayLayout()
+    private HorizontalLayout getAddPayLayout()
     {
-        HorizontalLayout layout = horizontal(MARGIN_FALSE, SPACING_TRUE, BACK_GREEN);
+        HorizontalLayout layout = getAddLayout("Pay");
 
         List<Pay> pays = p2pMgr.getEnabledPays(user.getId());
-        if (pays.size() > 0) { layout.addComponent(createButton(pays.get(0))); }
-        if (pays.size() > 1) { layout.addComponent(createButton(pays.get(1))); }
-
-        if (pays.size() > 2)
+        List<Pay> comboBoxPays = new ArrayList<>();
+        for (Pay pay : pays)
         {
-            List<Pay> remainingPays = pays.stream()
-                .filter(p -> p != pays.get(0) && p != pays.get(1))
-                .collect(Collectors.toList());
+            if (!StringUtils.isBlank(pay.getDisplayOrder())) { layout.addComponent(createButton(pay)); }
+            else { comboBoxPays.add(pay); }
+        }
 
-            ComboBox<Pay> comboBox = createComboBox(new ComboBox<Pay>(), "Pay", remainingPays);
+        if (!comboBoxPays.isEmpty())
+        {
+            ComboBox<Pay> comboBox = createComboBox(new ComboBox<Pay>(), "Pay", comboBoxPays);
             comboBox.addSelectionListener(event -> {
                 Pay pay = event.getSelectedItem().orElse(null);
                 if (pay != null)
@@ -113,24 +120,24 @@ public class ActionsLayout extends VerticalLayout implements Settable
             layout.addComponent(comboBox);
         }
 
-        return layout;
+        return wrappedLayout(layout, "payLayout");
     }
 
-    private Component getAddPlayLayout()
+    private HorizontalLayout getAddPlayLayout()
     {
-        HorizontalLayout layout = horizontal(MARGIN_FALSE, SPACING_TRUE, BACK_BLUE);
+        HorizontalLayout layout = getAddLayout("Play");
 
         List<Play> plays = p2pMgr.getEnabledPlays(user.getId());
-        if (plays.size() > 0) { layout.addComponent(createButton(plays.get(0))); }
-        if (plays.size() > 1) { layout.addComponent(createButton(plays.get(1))); }
-
-        if (plays.size() > 2)
+        List<Play> comboBoxPlays = new ArrayList<>();
+        for (Play play : plays)
         {
-            List<Play> remainingPlays = plays.stream()
-                .filter(p -> p != plays.get(0) && p != plays.get(1))
-                .collect(Collectors.toList());
+            if (!StringUtils.isBlank(play.getDisplayOrder())) { layout.addComponent(createButton(play)); }
+            else { comboBoxPlays.add(play); }
+        }
 
-            ComboBox<Play> comboBox = createComboBox(new ComboBox<Play>(), "Play", remainingPlays);
+        if (!comboBoxPlays.isEmpty())
+        {
+            ComboBox<Play> comboBox = createComboBox(new ComboBox<Play>(), "Play", comboBoxPlays);
             comboBox.addSelectionListener(event -> {
                 Play play = event.getSelectedItem().orElse(null);
                 if (play != null)
@@ -143,17 +150,32 @@ public class ActionsLayout extends VerticalLayout implements Settable
             layout.addComponent(comboBox);
         }
 
-        return layout;
+        return wrappedLayout(layout, "playLayout");
+    }
+
+    private HorizontalLayout getAddLayout(String name)
+    {
+        Label label = new Label(name);
+        label.addStyleName("payLabel");
+
+        return horizontal(label, MARGIN_FALSE, SPACING_TRUE);
+    }
+
+    private HorizontalLayout wrappedLayout(HorizontalLayout layout, String wrapperStyle)
+    {
+        HorizontalLayout wrapper = horizontal(layout, MARGIN_TRUE);
+        wrapper.addStyleName(wrapperStyle);
+        return wrapper;
     }
 
     private <T extends Play> ComboBox<T> createComboBox(ComboBox<T> comboBox, String name, List<T> items)
     {
-        comboBox.setPlaceholder("More " + name);
+        comboBox.setPlaceholder("");
         comboBox.addStyleName(ValoTheme.TEXTFIELD_TINY);
         comboBox.setTextInputAllowed(false);
         comboBox.setItems(items);
         comboBox.setItemCaptionGenerator(T::getDisplayShortName);
-        comboBox.setWidth(10, Unit.EM);
+        comboBox.setWidth(3, Unit.EM);
         comboBox.setPopupWidth(null);
 
         return comboBox;

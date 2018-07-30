@@ -33,6 +33,7 @@ import xyz.cleangone.web.vaadin.desktop.org.profile.ProfilePage;
 import xyz.cleangone.web.vaadin.desktop.user.LoginPage;
 import xyz.cleangone.web.vaadin.util.VaadinUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -46,6 +47,9 @@ public class MyUI extends UI
     public static final String RESET_PASSWORD_URL_PARAM = "reset";
     public static final String VERIFY_EMAIL_URL_PARAM = "verify";
     public static final String ITEM_URL_PARAM = "item";
+    private static SimpleDateFormat LOG_SDF = new SimpleDateFormat("MM/dd HH:mm:ss");
+
+
 
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
@@ -61,6 +65,8 @@ public class MyUI extends UI
     @Override
     protected void init(VaadinRequest vaadinRequest)
     {
+        log("UI init");
+
 //        VaadinUtils.SHOW_BACKBROUND_COLORS = true;
 
         new Navigator(this, this);
@@ -72,12 +78,16 @@ public class MyUI extends UI
         WebBrowser webBrowser = getCurrent().getPage().getWebBrowser();
         sessionMgr.setIsMobileBrowser(webBrowser.isIOS() || webBrowser.isAndroid() || webBrowser.isWindowsPhone());
 
-
         ReconnectDialogConfiguration reconnect = getReconnectDialogConfiguration();
-        String dialog = reconnect.getDialogText(); // Universally hated "Server connection lost, trying to reconnect..."
-        int grace = reconnect.getDialogGracePeriod(); // 400
-        reconnect.setDialogText("");
-        reconnect.setDialogGracePeriod(10000); // 10 secs
+        reconnect.setDialogText(""); // quieter than the universally hated "Server connection lost, trying to reconnect..."
+        reconnect.setDialogGracePeriod(10000); // 10 secs, instead or 400ms default
+
+        addDetachListener(new DetachListener() {
+            @Override
+            public void detach(final DetachEvent detachEvent) {
+                log("UI detached");
+            }
+        });
 
         // strip off # qualifier and/or ? params
         String uri = vaadinRequest.getParameter("v-loc");
@@ -267,4 +277,16 @@ public class MyUI extends UI
 //            userMgr.logout();
 //        }
     }
+
+    @Override
+    protected void refresh(VaadinRequest request) {
+        super.refresh(request);
+        log("UI refreshed");
+    }
+
+    private void log(String msg)
+    {
+        System.out.println(LOG_SDF.format(new Date()) + " UI[id=" + getUIId() + "] " + msg);
+    }
+
 }

@@ -1,6 +1,8 @@
 package xyz.cleangone.web.vaadin.desktop.actionbar;
 
 import com.vaadin.icons.VaadinIcons;
+import fit.pay2play.web.vaadin.desktop.pay.PaysAdminPage;
+import fit.pay2play.web.vaadin.desktop.play.PlaysAdminPage;
 import xyz.cleangone.data.aws.dynamo.entity.lastTouched.EntityType;
 import xyz.cleangone.data.aws.dynamo.entity.organization.Organization;
 import xyz.cleangone.data.aws.dynamo.entity.person.User;
@@ -65,6 +67,8 @@ public class LeftMenuBar extends BaseMenuBar
         {
             MenuItem menuItem = addItem("", VaadinIcons.MENU, null);
             menuItem.addItem("Home", null, getNavigateCmd(OrgPage.NAME));
+            menuItem.addItem("Pay",  null, getNavigateCmd(PaysAdminPage.NAME));
+            menuItem.addItem("Play", null, getNavigateCmd(PlaysAdminPage.NAME));
         }
 
         return PageDisplayType.NoChange;

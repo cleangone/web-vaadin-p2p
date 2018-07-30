@@ -15489,6 +15489,23 @@ div.v-layout.v-horizontal.v-widget {
 	border-right: 1px solid silver;
 }
 
+.mytheme .payLayout {
+	background: green;
+	border: 1px solid silver;
+}
+
+.mytheme .payLabel {
+	color: white;
+	font-family: Times, serif;
+	font-weight: bold;
+	font-size: larger;
+}
+
+.mytheme .playLayout {
+	background: red;
+	border: 1px solid silver;
+}
+
 .mytheme .backRed {
 	background: red;
 }
@@ -15501,8 +15518,12 @@ div.v-layout.v-horizontal.v-widget {
 	background: yellow;
 }
 
-.mytheme .backGreen {
+.mytheme .backLGreen {
 	background: greenyellow;
+}
+
+.mytheme .backGreen {
+	background: green;
 }
 
 .mytheme .backBlue {

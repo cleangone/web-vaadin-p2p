@@ -109,10 +109,29 @@ $v-layout-spacing-horizontal: 10px;
   .dividerBot { border-bottom: 1px solid silver; }
   .dividerRight { border-right: 1px solid silver; }
 
+  .payLayout {
+    background: green;
+    border: 1px solid silver;
+  }
+
+  .payLabel {
+    color: white;
+    font-family: Times,serif;
+    font-weight: bold;
+    font-size: larger;
+  }
+
+  .playLayout {
+    background: red;
+    border: 1px solid silver;
+  }
+
+
   .backRed    { background: red; }
   .backOrange { background: orange; }
   .backYellow { background: yellow; }
-  .backGreen  { background: greenyellow; }
+  .backLGreen { background: greenyellow; }
+  .backGreen  { background: green; }
   .backBlue   { background: deepskyblue; }
   .backDBlue  { background: blue; }
   .backPink   { background: hotpink; }

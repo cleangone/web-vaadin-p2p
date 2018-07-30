@@ -31,12 +31,10 @@ public class ActionsGrid extends EntityGrid<Action>
     private static final EntityField DATE_FIELD = new EntityField(UPDATED_DATE_FIELD, "Date");
     private static SimpleDateFormat SDF_MMDD = new SimpleDateFormat("MM/dd");
 
-    private final Pay2PlayManager p2pMgr;
     private final ActionsLayout actionsLayout;
 
     public ActionsGrid(User user, Date date, Pay2PlayManager p2pMgr, boolean isMobileBrowser, ActionsLayout actionsLayout)
     {
-        this.p2pMgr = p2pMgr;
         this.actionsLayout = actionsLayout;
         setSizeFull();
 
@@ -69,25 +67,7 @@ public class ActionsGrid extends EntityGrid<Action>
 
     private LinkButton buildLinkButton(Action action)
     {
-        return new LinkButton(action.getDescription(), e -> {
-            actionsLayout.editAction(action);
-         });
-    }
-
-    private void addDeleteColumn()
-    {
-        addIconButtonColumn(this::buildDeleteButton);
-    }
-    private Button buildDeleteButton(Action action)
-    {
-        return (buildDeleteButton(action, action.getDescription()));
-    }
-
-    @Override
-    protected void delete(Action action)
-    {
-        p2pMgr.delete(action);
-        actionsLayout.set();
+        return new LinkButton(action.getDescription(), e -> actionsLayout.editAction(action));
     }
 
     private String calculateTotal(ListDataProvider<Action> provider)
