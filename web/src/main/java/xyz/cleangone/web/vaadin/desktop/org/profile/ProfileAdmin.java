@@ -12,7 +12,7 @@ import xyz.cleangone.data.aws.dynamo.entity.person.UserToken;
 import xyz.cleangone.data.manager.UserManager;
 import xyz.cleangone.web.manager.EntityChangeManager;
 import xyz.cleangone.web.manager.SessionManager;
-import xyz.cleangone.web.vaadin.desktop.MyUI;
+import xyz.cleangone.web.vaadin.servlet.P2pUI;
 import xyz.cleangone.web.vaadin.desktop.admin.tabs.org.BaseAdmin;
 import xyz.cleangone.web.vaadin.disclosure.BaseDisclosure;
 import xyz.cleangone.web.vaadin.ui.MessageDisplayer;
@@ -148,7 +148,7 @@ public class ProfileAdmin extends BaseAdmin
             if (StringUtils.isBlank(userEmail)) { return; }
 
             UserToken token = userMgr.createToken();
-            String link = sessionMgr.getUrl(MyUI.VERIFY_EMAIL_URL_PARAM, token);
+            String link = sessionMgr.getUrl(P2pUI.VERIFY_EMAIL_URL_PARAM, token);
             String subject = "Email Verification";
 
             String htmlBody = "<h1>Please Verify Email</h1> " +

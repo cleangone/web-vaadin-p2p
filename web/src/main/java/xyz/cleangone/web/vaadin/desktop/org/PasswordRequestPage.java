@@ -10,7 +10,7 @@ import xyz.cleangone.data.aws.dynamo.entity.organization.Organization;
 import xyz.cleangone.data.aws.dynamo.entity.person.User;
 import xyz.cleangone.data.aws.dynamo.entity.person.UserToken;
 import xyz.cleangone.data.manager.UserManager;
-import xyz.cleangone.web.vaadin.desktop.MyUI;
+import xyz.cleangone.web.vaadin.servlet.P2pUI;
 import xyz.cleangone.web.vaadin.ui.PageDisplayType;
 import xyz.cleangone.web.vaadin.util.VaadinUtils;
 import xyz.cleangone.message.EmailSender;
@@ -76,7 +76,7 @@ public class PasswordRequestPage extends BaseOrgPage implements View
     private boolean sendResetEmail(User user)
     {
         UserToken token = userMgr.createToken(user);
-        String link = sessionMgr.getUrl(MyUI.RESET_PASSWORD_URL_PARAM, token);
+        String link = sessionMgr.getUrl(P2pUI.RESET_PASSWORD_URL_PARAM, token);
 
         String subject = "Password Reset";
 

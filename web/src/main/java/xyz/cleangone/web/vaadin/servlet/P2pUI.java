@@ -1,13 +1,11 @@
-package xyz.cleangone.web.vaadin.desktop;
+package xyz.cleangone.web.vaadin.servlet;
 
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
 
 import com.vaadin.annotations.*;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.WebBrowser;
 import com.vaadin.ui.*;
 import fit.pay2play.web.vaadin.desktop.pay.PaysAdminPage;
@@ -31,7 +29,6 @@ import xyz.cleangone.web.vaadin.desktop.admin.superadmin.SuperAdminProfilePage;
 import xyz.cleangone.web.vaadin.desktop.org.*;
 import xyz.cleangone.web.vaadin.desktop.org.profile.ProfilePage;
 import xyz.cleangone.web.vaadin.desktop.user.LoginPage;
-import xyz.cleangone.web.vaadin.util.VaadinUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -42,20 +39,13 @@ import static xyz.cleangone.web.manager.CookieManager.*;
 @Push
 @Theme("mytheme")
 @Viewport("user-scalable=yes,initial-scale=1.0")
-public class MyUI extends UI
+public class P2pUI extends UI
 {
     public static final String RESET_PASSWORD_URL_PARAM = "reset";
     public static final String VERIFY_EMAIL_URL_PARAM = "verify";
-    public static final String ITEM_URL_PARAM = "item";
     private static SimpleDateFormat LOG_SDF = new SimpleDateFormat("MM/dd HH:mm:ss");
 
-
-
-    @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
-    @VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
-    public static class MyUIServlet extends VaadinServlet { }
-
-    private static final Logger LOG = Logger.getLogger(MyUI.class.getName());
+    private static final Logger LOG = Logger.getLogger(P2pUI.class.getName());
 
     static
     {
@@ -170,7 +160,7 @@ public class MyUI extends UI
             }
         }
 
-        // default for superadmin
+        // superadmin default page
         if (initialPage == null && userMgr.userIsSuperAdmin())
         {
             initialPage = SuperAdminPage.NAME;
@@ -251,39 +241,13 @@ public class MyUI extends UI
         return org;
     }
 
-    private OrgTag getCategory(CatalogItem item, TagManager tagMgr)
-    {
-        Map<String, OrgTag> categoryIdToCategory = new HashMap<>();
-        for (OrgTag category : tagMgr.getCategories()) { categoryIdToCategory.put(category.getId(), category); }
-
-        for (String itemCategoryId : item.getCategoryIds())
-        {
-            if (categoryIdToCategory.containsKey(itemCategoryId))
-            {
-                return categoryIdToCategory.get(itemCategoryId);
-            }
-        }
-
-        return null;
-    }
-
-    private void verifyUser(UserManager userMgr, Organization org)
-    {
-//        User user = userMgr.getUser();
-//        if (user != null && user.getOrgId() != null && !user.getOrgId().equals(org.getId()))
-//        {
-//            LOG.info("Logging out User " + user.getId() + " because logged in by token but org " + user.getOrgId() +
-//                " does not match path Org " + org.getId());
-//            userMgr.logout();
-//        }
-    }
-
     @Override
     protected void refresh(VaadinRequest request) {
         super.refresh(request);
         log("UI refreshed");
     }
 
+    // todo - quick workaround for now - remove eventually
     private void log(String msg)
     {
         System.out.println(LOG_SDF.format(new Date()) + " UI[id=" + getUIId() + "] " + msg);
