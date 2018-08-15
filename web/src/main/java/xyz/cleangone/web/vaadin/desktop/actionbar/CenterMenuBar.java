@@ -2,14 +2,12 @@ package xyz.cleangone.web.vaadin.desktop.actionbar;
 
 import com.vaadin.icons.VaadinIcons;
 import fit.pay2play.data.manager.Pay2PlayManager;
-import fit.pay2play.web.vaadin.desktop.pay.PaysAdminPage;
-import fit.pay2play.web.vaadin.desktop.play.PlaysAdminPage;
+import fit.pay2play.web.vaadin.desktop.actionCategory.PaysAdminPage;
+import fit.pay2play.web.vaadin.desktop.actionCategory.PlaysAdminPage;
 import xyz.cleangone.data.aws.dynamo.entity.organization.Organization;
 import xyz.cleangone.web.manager.SessionManager;
 import xyz.cleangone.web.vaadin.desktop.org.OrgPage;
 import xyz.cleangone.web.vaadin.ui.PageDisplayType;
-
-import static xyz.cleangone.web.vaadin.util.VaadinUtils.*;
 
 public class CenterMenuBar extends BaseMenuBar
 {

@@ -1,5 +1,6 @@
 package fit.pay2play;
 
+import fit.pay2play.data.manager.Pay2PlayManager;
 import xyz.cleangone.data.aws.dynamo.entity.organization.Organization;
 import xyz.cleangone.data.aws.dynamo.entity.person.AdminPrivledge;
 import xyz.cleangone.data.aws.dynamo.entity.person.User;
@@ -16,6 +17,7 @@ public class Seed
 
     OrgManager orgMgr = new OrgManager();
     UserManager userMgr = new UserManager();
+    Pay2PlayManager p2pMgr = new Pay2PlayManager();
 
     public static void main(String[] args)
     {
@@ -40,5 +42,10 @@ public class Seed
         user.setPassword("blah");
         userMgr.save(user);
     }
+
+
+
+
+
 
 }

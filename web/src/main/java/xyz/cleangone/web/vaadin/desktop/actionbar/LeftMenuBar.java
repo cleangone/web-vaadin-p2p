@@ -1,8 +1,8 @@
 package xyz.cleangone.web.vaadin.desktop.actionbar;
 
 import com.vaadin.icons.VaadinIcons;
-import fit.pay2play.web.vaadin.desktop.pay.PaysAdminPage;
-import fit.pay2play.web.vaadin.desktop.play.PlaysAdminPage;
+import fit.pay2play.web.vaadin.desktop.actionCategory.PaysAdminPage;
+import fit.pay2play.web.vaadin.desktop.actionCategory.PlaysAdminPage;
 import xyz.cleangone.data.aws.dynamo.entity.lastTouched.EntityType;
 import xyz.cleangone.data.aws.dynamo.entity.organization.Organization;
 import xyz.cleangone.data.aws.dynamo.entity.person.User;

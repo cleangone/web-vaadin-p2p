@@ -1,9 +1,6 @@
 package fit.pay2play.web.vaadin.desktop.action.components;
 
-import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.ChartClickListener;
-import com.vaadin.addon.charts.PointClickEvent;
-import com.vaadin.addon.charts.PointClickListener;
+import com.vaadin.addon.charts.*;
 import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.Color;
 import com.vaadin.addon.charts.model.style.SolidColor;
@@ -14,7 +11,6 @@ import fit.pay2play.web.vaadin.desktop.action.ActionsLayout;
 import fit.pay2play.web.vaadin.desktop.action.components.chartExamples.AbstractVaadinChartExample;
 import xyz.cleangone.data.aws.dynamo.entity.person.User;
 
-import java.util.Date;
 import java.util.List;
 
 public class ActionsChart extends AbstractVaadinChartExample implements PointClickListener
@@ -34,6 +30,11 @@ public class ActionsChart extends AbstractVaadinChartExample implements PointCli
         this.p2pMgr = p2pMgr;
         this.isMobileBrowser = isMobileBrowser;
         this.actionsLayout = actionsLayout;
+
+        // chart timeline is utc by default
+        Global global = new Global();
+        global.setUseUTC(false);
+        ChartOptions.get().setGlobal(global);
     }
 
     @Override

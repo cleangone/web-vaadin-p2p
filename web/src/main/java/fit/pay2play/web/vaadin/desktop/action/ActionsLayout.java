@@ -1,28 +1,23 @@
 package fit.pay2play.web.vaadin.desktop.action;
 
-import com.vaadin.event.selection.SingleSelectionListener;
 import com.vaadin.shared.ui.AlignmentInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import fit.pay2play.data.aws.dynamo.entity.Action;
-import fit.pay2play.data.aws.dynamo.entity.Pay;
-import fit.pay2play.data.aws.dynamo.entity.Play;
+import fit.pay2play.data.aws.dynamo.entity.ActionCategory;
+import fit.pay2play.data.aws.dynamo.entity.ActionType;
 import fit.pay2play.data.manager.Pay2PlayManager;
 import fit.pay2play.web.vaadin.desktop.action.components.ActionsChart;
 import fit.pay2play.web.vaadin.desktop.action.components.ActionsGrid;
 import fit.pay2play.web.vaadin.desktop.base.Settable;
 import org.apache.commons.lang3.StringUtils;
-import xyz.cleangone.data.aws.dynamo.entity.base.BaseNamedEntity;
 import xyz.cleangone.data.aws.dynamo.entity.person.User;
 import xyz.cleangone.web.manager.SessionManager;
 import xyz.cleangone.web.vaadin.desktop.actionbar.ActionBar;
-import xyz.cleangone.web.vaadin.ui.MessageDisplayer;
-import xyz.cleangone.web.vaadin.util.VaadinUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static xyz.cleangone.web.vaadin.util.VaadinUtils.*;
 
@@ -32,6 +27,7 @@ public class ActionsLayout extends VerticalLayout implements Settable
     private final User user;
     private Pay2PlayManager p2pMgr = new Pay2PlayManager();
     private ActionAdmin actionAdmin;
+    private Component actionsChart;
     private VerticalLayout actionsGridLayout = vertical(MARGIN_FALSE, SPACING_TRUE, BACK_YELLOW);
 
     public ActionsLayout(SessionManager sessionMgr, ActionBar actionBar)
@@ -48,10 +44,10 @@ public class ActionsLayout extends VerticalLayout implements Settable
     public void set()
     {
         removeAllComponents();
-        Component chart = new ActionsChart(user, p2pMgr, sessionMgr.isMobileBrowser(), this);
         if (user == null)
         {
-            addComponents(chart);
+            actionsChart = new ActionsChart(user, p2pMgr, sessionMgr.isMobileBrowser(), this);
+            addComponents(actionsChart);
             return;
         }
 
@@ -72,10 +68,21 @@ public class ActionsLayout extends VerticalLayout implements Settable
             addComponent(topLayout);
         }
 
+        reset();
+    }
+
+    private void reset()
+    {
+        if (actionsChart != null) { removeComponent(actionsChart); }
+        removeComponent(actionsGridLayout);
+
+        actionsChart = new ActionsChart(user, p2pMgr, sessionMgr.isMobileBrowser(), this);
         setActionsGrid(new Date());
-        addComponents(chart, actionsGridLayout);
+
+        addComponents(actionsChart, actionsGridLayout);
         setExpandRatio(actionsGridLayout, 1.0f);
     }
+
 
     public void editAction(Action action)
     {
@@ -93,65 +100,75 @@ public class ActionsLayout extends VerticalLayout implements Settable
         actionsGridLayout.setExpandRatio(actionsGrid, 1.0f);
     }
 
+//    private HorizontalLayout getAddPayLayout()
+//    {
+//        HorizontalLayout layout = getAddLayout("Pay");
+//
+//        List<ActionCategory> pays = p2pMgr.getEnabledActionCategories(user.getId(), ActionType.Pay);
+//        List<ActionCategory> comboBoxPays = new ArrayList<>();
+//        for (ActionCategory pay : pays)
+//        {
+//            if (!StringUtils.isBlank(pay.getDisplayOrder())) { layout.addComponent(createButton(pay)); }
+//            else { comboBoxPays.add(pay); }
+//        }
+//
+//        if (!comboBoxPays.isEmpty())
+//        {
+//            layout.addComponent(createComboBox(comboBoxPays));
+//        }
+//
+//        return wrappedLayout(layout, "payLayout");
+//    }
+//
+//    private HorizontalLayout getAddPlayLayout()
+//    {
+//        HorizontalLayout layout = getAddLayout("Play");
+//
+//        List<ActionCategory> plays = p2pMgr.getEnabledActionCategories(user.getId(), ActionType.Play);
+//        List<ActionCategory> comboBoxPlays = new ArrayList<>();
+//        for (ActionCategory play : plays)
+//        {
+//            if (!StringUtils.isBlank(play.getDisplayOrder())) { layout.addComponent(createButton(play)); }
+//            else { comboBoxPlays.add(play); }
+//        }
+//
+//        if (!comboBoxPlays.isEmpty())
+//        {
+//            layout.addComponent(createComboBox(comboBoxPlays));
+//        }
+//
+//        return wrappedLayout(layout, "playLayout");
+//    }
+
     private HorizontalLayout getAddPayLayout()
     {
-        HorizontalLayout layout = getAddLayout("Pay");
-
-        List<Pay> pays = p2pMgr.getEnabledPays(user.getId());
-        List<Pay> comboBoxPays = new ArrayList<>();
-        for (Pay pay : pays)
-        {
-            if (!StringUtils.isBlank(pay.getDisplayOrder())) { layout.addComponent(createButton(pay)); }
-            else { comboBoxPays.add(pay); }
-        }
-
-        if (!comboBoxPays.isEmpty())
-        {
-            ComboBox<Pay> comboBox = createComboBox(new ComboBox<Pay>(), "Pay", comboBoxPays);
-            comboBox.addSelectionListener(event -> {
-                Pay pay = event.getSelectedItem().orElse(null);
-                if (pay != null)
-                {
-                    p2pMgr.addAction(pay);
-                    set();
-                }
-            });
-
-            layout.addComponent(comboBox);
-        }
-
-        return wrappedLayout(layout, "payLayout");
+        return getAddActionLayout("Pay", ActionType.Pay, "payLayout");
     }
-
     private HorizontalLayout getAddPlayLayout()
     {
-        HorizontalLayout layout = getAddLayout("Play");
-
-        List<Play> plays = p2pMgr.getEnabledPlays(user.getId());
-        List<Play> comboBoxPlays = new ArrayList<>();
-        for (Play play : plays)
-        {
-            if (!StringUtils.isBlank(play.getDisplayOrder())) { layout.addComponent(createButton(play)); }
-            else { comboBoxPlays.add(play); }
-        }
-
-        if (!comboBoxPlays.isEmpty())
-        {
-            ComboBox<Play> comboBox = createComboBox(new ComboBox<Play>(), "Play", comboBoxPlays);
-            comboBox.addSelectionListener(event -> {
-                Play play = event.getSelectedItem().orElse(null);
-                if (play != null)
-                {
-                    p2pMgr.addAction(play);
-                    set();
-                }
-            });
-
-            layout.addComponent(comboBox);
-        }
-
-        return wrappedLayout(layout, "playLayout");
+        return getAddActionLayout("Play", ActionType.Play, "playLayout");
     }
+
+    private HorizontalLayout getAddActionLayout(String name, ActionType actionType, String style)
+    {
+        HorizontalLayout layout = getAddLayout(name);
+
+        List<ActionCategory> actionCategories = p2pMgr.getEnabledActionCategories(user.getId(), actionType);
+        List<ActionCategory> comboBoxActionCategories = new ArrayList<>();
+        for (ActionCategory actionCategory : actionCategories)
+        {
+            if (!StringUtils.isBlank(actionCategory.getDisplayOrder())) { layout.addComponent(createButton(actionCategory)); }
+            else { comboBoxActionCategories.add(actionCategory); }
+        }
+
+        if (!comboBoxActionCategories.isEmpty())
+        {
+            layout.addComponent(createComboBox(comboBoxActionCategories));
+        }
+
+        return wrappedLayout(layout, style);
+    }
+
 
     private HorizontalLayout getAddLayout(String name)
     {
@@ -168,28 +185,39 @@ public class ActionsLayout extends VerticalLayout implements Settable
         return wrapper;
     }
 
-    private <T extends Play> ComboBox<T> createComboBox(ComboBox<T> comboBox, String name, List<T> items)
+    private ComboBox<ActionCategory> createComboBox(List<ActionCategory> items)
     {
+        ComboBox<ActionCategory> comboBox = new ComboBox<>();
+
         comboBox.setPlaceholder("");
         comboBox.addStyleName(ValoTheme.TEXTFIELD_TINY);
         comboBox.setTextInputAllowed(false);
         comboBox.setItems(items);
-        comboBox.setItemCaptionGenerator(T::getDisplayShortName);
+        comboBox.setItemCaptionGenerator(ActionCategory::getDisplayShortName);
         comboBox.setWidth(3, Unit.EM);
         comboBox.setPopupWidth(null);
+
+        comboBox.addSelectionListener(event -> {
+            ActionCategory actionCategory = event.getSelectedItem().orElse(null);
+            if (actionCategory != null)
+            {
+                p2pMgr.addAction(actionCategory);
+                reset();
+            }
+        });
 
         return comboBox;
     }
 
-    private Button createButton(Pay pay)
-    {
-        return createButton(pay.getDisplayShortName(), event -> {
-            p2pMgr.addAction(pay);
-            set();
-        });
-    }
+//    private Button createButton(ActionType actionCategory)
+//    {
+//        return createButton(actionCategory.getDisplayShortName(), event -> {
+//            p2pMgr.addAction(actionCategory);
+//            set();
+//        });
+//    }
 
-    private Button createButton(Play play)
+    private Button createButton(ActionCategory play)
     {
         return createButton(play.getDisplayShortName(), event -> {
             p2pMgr.addAction(play);

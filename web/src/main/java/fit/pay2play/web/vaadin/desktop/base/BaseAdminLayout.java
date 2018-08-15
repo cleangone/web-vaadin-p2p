@@ -60,6 +60,18 @@ public abstract class BaseAdminLayout extends VerticalLayout
         return checkBox;
     }
 
+    protected TwoDecimalField createIntegerField(EntityField field, BaseNamedEntity entity)
+    {
+        TwoDecimalField decimalField = createIntegerField(field.getDisplayName(), entity.getInteger(field));
+        decimalField.addValueChangeListener(event -> {
+            BigDecimal bdValue = decimalField.getBigDecimalValue();
+            entity.setInteger(field, bdValue == null ? null : bdValue.intValue());
+            save(field);
+        });
+
+        return decimalField;
+    }
+
     protected TwoDecimalField createTwoDecimalField(EntityField field, BaseNamedEntity entity)
     {
         TwoDecimalField twoDecimalField = createTwoDecimalField(field.getDisplayName(), entity.getBigDecimal(field));
@@ -73,6 +85,20 @@ public abstract class BaseAdminLayout extends VerticalLayout
 
     protected abstract void save(EntityField field);
 
+    protected static TwoDecimalField createIntegerField(String name, Integer value)
+    {
+        TwoDecimalField field = new TwoDecimalField(name);  // todo - really refactor
+        field.setValueChangeMode(ValueChangeMode.BLUR);
+        field.addStyleName(ValoTheme.TEXTFIELD_TINY);
+        field.addStyleName(ValoTheme.LABEL_TINY);
+        field.addStyleName(ValoTheme.LABEL_NO_MARGIN);
+
+        if (value != null) { field.setValue(value.toString()); } // todo refactor
+
+        return field;
+    }
+
+
     protected static TwoDecimalField createTwoDecimalField(String name, BigDecimal value)
     {
         TwoDecimalField field = new TwoDecimalField(name);
@@ -85,4 +111,5 @@ public abstract class BaseAdminLayout extends VerticalLayout
 
         return field;
     }
+
 }
