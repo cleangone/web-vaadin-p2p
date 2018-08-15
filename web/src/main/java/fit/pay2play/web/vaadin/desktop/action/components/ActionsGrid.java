@@ -9,6 +9,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.components.grid.HeaderRow;
 import fit.pay2play.data.aws.dynamo.entity.Action;
+import fit.pay2play.data.aws.dynamo.entity.ActionType;
 import fit.pay2play.data.manager.Pay2PlayManager;
 import fit.pay2play.web.vaadin.desktop.action.ActionsLayout;
 import xyz.cleangone.data.aws.dynamo.entity.base.EntityField;
@@ -45,11 +46,8 @@ public class ActionsGrid extends EntityGrid<Action>
             addColumn(ACTION_TYPE_FIELD, Action::getActionTypeDisplay);
         }
 
-
-        Column descCol = addLinkButtonOrLabelColumn(DESC_FIELD, this::buildLinkButton, 3);
+        Column descCol = addComponentColumn(DESC_FIELD, this::buildLinkOrLabel, 3);
         if (isMobileBrowser) { descCol.setCaption(SDF_MMDD.format(date)); }
-
-
 
         Column<Action, BigDecimal> totalCol = addBigDecimalColumn(TOTAL_VALUE_FIELD, Action::getTotalValue);
 
@@ -70,23 +68,23 @@ public class ActionsGrid extends EntityGrid<Action>
         }
     }
 
-    // todo - yet another hack for action adjustments
-    protected Column addLinkButtonOrLabelColumn(EntityField entityField, ValueProvider<Action, Component> valueProvider, int expandRatio)
+    protected Column addComponentColumn(EntityField entityField, ValueProvider<Action, Component> valueProvider, int expandRatio)
     {
         return this.addComponentColumn(valueProvider).setId(entityField.getName()).setExpandRatio(expandRatio);
     }
 
-    private Component buildLinkButton(Action action)
+    private Component buildLinkOrLabel(Action action)
     {
-        // todo - hack
-        if (action.isAdjustment())
+        if (ActionType.isAdjustment(action.getActionType()))
         {
             Label label = new Label(action.getDescription());
             label.addStyleName("marginLeft");
             return label;
         }
         else
+        {
             return new LinkButton(action.getDescription(), e -> actionsLayout.editAction(action));
+        }
     }
 
     private String calculateTotal(ListDataProvider<Action> provider)
